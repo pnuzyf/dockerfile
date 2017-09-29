@@ -1,1 +1,17 @@
-FROM docker.elastic.co/beats/filebeat:5.6.1
+FROM centos
+MAINTAINER zhou_yf
+
+ENV TIME_ZONE Asia/Shanghai
+
+COPY filebeat-5.6.1-linux-x86_64.tar.gz /usr/local
+RUN ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime && \
+    cd /usr/local && \
+    tar xvf filebeat-5.6.1-linux-x86_64.tar.gz && \
+    rm -f filebeat-5.6.1-linux-x86_64.tar.gz && \
+    ln -s /usr/local/filebeat-5.6.1-linux-x86_64 /usr/local/filebeat && \
+    chmod +x /usr/local/filebeat/filebeat  && \
+    mkdir -p /etc/filebeat
+
+ADD ./filebeat.yml /etc/filebeat
+
+CMD ["/usr/local/filebeat/filebeat","-e","-c","/etc/filebeat/filebeat.yml"]
